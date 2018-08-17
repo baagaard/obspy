@@ -11,11 +11,23 @@ master:
    * Added remove method to Inventory class (see #2088).
    * Added id property to WaveformStreamID (see #2131).
    * Added __str__ and _repr_pretty_ method for Comment class (see #2115)
+   * Added __eq__ to QuantityError so empty instances equal None (see #2185).
+   * Reworked the event scoped resource identifiers for the event classes
+     hopefully fixing all edge-cases (see #2091).
+ - obspy.clients.fdsn:
+   * Adding more location codes to the default priority list in the mass
+     downloader (see #2155, #2159).
+   * The mass downloader now raises a warning if all channels from a station
+     have been deselected due to the default location priorities setting. This
+     is a pure usability improvement as it has been confusing users
+     (see #2159).
  - obspy.io.nordic:
    * Add ability to read and write focal mechanisms and moment tensor
-     information.
+     information. (see #1924)
    * Add explicit warnings regarding unsupported sections of Nordic files.
    * Fix mapping of magnitude-types between MS to S and Ms to s.
+   * Output preferred origin when writing to Nordic format instead of using
+     the first origin (see #2195)
  - obspy.io.reftek:
    * Implement reading reftek encodings '16' and '32' (uncompressed data,
      16/32bit integers, see #2058 and #2059)
@@ -33,6 +45,8 @@ master:
      objects to shapefile (see #2012)
  - obspy.io
     * added read support for receiver gather format v. 1.6 (see #2070)
+ - obspy.signal.trigger:
+    * fix a bug in AR picker (see #2157)
  - obspy.signal.PPSD:
    * Fixed exact trace cutting for PSD segments (see #2040).
    * Timestamp representations internally and in npz I/O were changed to use
@@ -47,7 +61,7 @@ master:
      'method' parameter to be consistent with recent SciPy versions
      (see #2042).
 
-1.1.1rc1:
+1.1.1rc1.post0:
  - General:
    * Tests pass with numpy 1.14 (see #2044).
  - obspy.core:
@@ -75,6 +89,10 @@ master:
  - obspy.imaging:
    * Normalize moment tensors prior to plotting in the mopad wrapper to
      stabilize the algorithm (see #2114, #2125).
+ - obspy.io.ascii:
+   * Fixes an issue with the time representation (see #2165, #2179).
+ - obspy.io.css:
+   * Fix automatic filetype detection (see #2160 and #2162)
  - obspy.io.mseed:
    * Ability to read files that have embedded chunks of non SEED data.
      (see #1981, #2057).
@@ -82,9 +100,12 @@ master:
      sample rate = 1 (see #2069)
    * Avoid showing invalid warnings when guessing endian during parsing
      timestamps (see #1988)
+   * util.get_record_information() now works correctly for negative
+     sampling rate factors and multipliers (see #2030, #2191).
  - obspy.io.nordic
    * Bug-fix for amplitudes without magnitude_hint (see #2021)
    * Bug-fix for wavefiles with full path stripping (see #2021)
+   * Bug-fix for longitudes between -100 and -180 (see #2197)
  - obspy.io.reftek:
    * Fix problems reading some Reftek 130 files, presumably due to floating
      point accuracy issues in comparing timestamps. Internal representation of
@@ -97,11 +118,16 @@ master:
  - obspy.io.stationxml
    * Allow writing of dates before 1900 also on Python 2 (see #2013, #2015).
    * Write the UTC time zone specifier to all times (see #2015).
+ - obspy.io.xseed:
+   * Third condition to split blockettes when reading RESP files. Now more
+     forgiving for slightly different files (see #2170, #2189)
  - obspy.signal:
    * Allow singular COUNT units in evalresp (see #2003, #2011).
    * PPSD: for safety reasons, raise an ObsPyException if trying to read a PPSD
      npz file that was written with a newer version of the npz representation
      than is used by current ObsPy version (see #2051)
+   * The ar_pick() trigger function now raises an error if the three data arrays
+     don't have the same length (see #1801, #2148).
  - obspy.taup:
    * Fallback to linear slowness interpolation for very small and
      shallow layers (see #2126, #2129).

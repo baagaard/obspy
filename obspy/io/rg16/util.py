@@ -60,7 +60,7 @@ def _read_block(fi, spec, start_bit=0):
     return out
 
 
-def _read(fi, position, length, dtype):
+def _read(fi, position, length, dtype, new_dtype=None):
     """
     Read one or more bytes using provided datatype.
 
@@ -76,6 +76,7 @@ def _read(fi, position, length, dtype):
             >i3 - big endian 3 byte int
             >i. - 4 bit int, left four bits
     :type dtype: str
+    :param new_dtype: Any valid numpy data type.
     :return:
     """
     # if a list is passed as parameters then recurse through each
@@ -95,6 +96,8 @@ def _read(fi, position, length, dtype):
         return READ_FUNCS[dtype](fi, length)
     else:
         data = np.fromstring(fi.read(int(length)), dtype)
+        if new_dtype is not None:  # cast data to new_dtype (due to #2198)
+            data = data.astype(new_dtype)
         return data[0] if len(data) == 1 else data
 
 
@@ -124,14 +127,14 @@ def _read_bytes(fi, length):
 def _read_24_bit_little(fi, length):
     """ read a 3 byte int, little endian """
     chunk = fi.read(length)
-    return struct.unpack('<I', chunk + b'\x00')[0]
+    return struct.unpack(nstr('<I'), chunk + b'\x00')[0]
 
 
 @_register_read_func('>i3')
 def _read_24_bit_big(fi, length):
     """ read a 3 byte int, big endian """
     chunk = fi.read(length)
-    return struct.unpack('>I', b'\x00' + chunk)[0]
+    return struct.unpack(nstr('>I'), b'\x00' + chunk)[0]
 
 
 @_register_read_func('>i.')
